@@ -1,7 +1,9 @@
 sqlalchemy-crosstab-postgresql
 ==============================
 
-New grammar for SQLAlchemy to handle the crosstab() tablefunc in Postgresql.
+New grammar for SQLAlchemy to make handling the crosstab() tablefunc in
+Postgresql easy peasy. Jump down to the usage example if you're impatient.
+
 This is a work-in-progress and not all that clean right now, but you're welcome
 to bring in your fixes and patches!
 
