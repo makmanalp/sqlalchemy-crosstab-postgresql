@@ -3,7 +3,7 @@ from sqlalchemy import Table, Column, Text, Integer, MetaData, distinct, select
 
 #create Engine and bind
 from sqlalchemy import create_engine
-engine = create_engine("postgresql+psycopg2:///h1b")
+engine = create_engine("postgresql+psycopg2:///dbname")
 engine.echo = True
 m = MetaData()
 m.bind = engine
