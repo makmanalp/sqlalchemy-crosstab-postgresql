@@ -89,10 +89,10 @@ as derp (country text, y1 int, y2 int, y3 int, y4 int)
 ```
 
 where the first parameter is the input of form (key,
-thing_to_turn_into_columns, value) and the second is a list of output column
-values (eg. 2008, 2009, 2010, 2011). The from clause needs to declare the
-expected return types, which usually are the types of (key, col1, col2, col3
-...) etc.
+thing_to_turn_into_columns, value) (e.g. India, 2009, 100 etc.) and the second
+is a list of possible column values (eg. 2008, 2009, 2010, 2011). The from
+clause needs to declare the expected return types, which usually are the types
+of (key, col1, col2, col3 ...) etc.
 
 For more, read the [tablefunc docs](http://www.postgresql.org/docs/current/static/tablefunc.html).
 
@@ -106,13 +106,21 @@ Things I wish people had told me about crosstab
   category_sql), where the second query must return a list of column names
   (e.g. "India", "Czechoslovakia"). These must be ordered also, otherwise the
   output gets wonky. Can't have dupes either.
-* For your category query, you can use a regular select distinct or you can just "fake it" by doing a select * from values (...).
+* The easy-to-miss conclusion from the previous point is that it is up to you
+  to make sure that when you define your return types, they should accurately
+  depict what your input data contains. Following our example, if you claim in
+  the return types that you only have 2 columns for 2008 and 2009, it will
+  complain. So you need to know beforehand all the possible column values and
+  use a "where year = 2008 or year = 2010 etc" to make other possible values
+  not appear. The benefit of the latter call form with 2 parameters is that any
+  extra column values are ignored and you don't have to deal with that.
+* For your category query, you can use a regular select distinct or you can
+  just "fake it" by doing a select * from values (...).
 * Your source sql *must* be ordered by 1, 2.
 * Your category query must be ordered also.
 * You have to pass in the queries as strings, which is a pain in the butt and
   causes issues when you need to escape things (e.g. a quote). Luckily, the
-  [double dollar
-  operator](http://www.postgresql.org/docs/current/interactive/sql-syntax-lexical.html#SQL-SYNTAX-DOLLAR-QUOTING)
+  [double dollar operator](http://www.postgresql.org/docs/current/interactive/sql-syntax-lexical.html#SQL-SYNTAX-DOLLAR-QUOTING)
   comes to the rescue.
 
 Usage
