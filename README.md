@@ -82,11 +82,17 @@ makes a new table where it puts value in location (x, y) e.g. 400 in (2010,
 
 So a sample query would look like this:
 
-    select *
-    from crosstab('select country, year, count from pop order by 1', 'select distinct year from pop order by 1')
-    as derp (country text, y1 int, y2 int, y3 int, y4 int)
+```sql
+select *
+from crosstab('select country, year, count from pop order by 1', 'select distinct year from pop order by 1')
+as derp (country text, y1 int, y2 int, y3 int, y4 int)
+```
 
-Where the first parameter is the input of form (key, thing_to_turn_into_columns, value) and the second is 
+where the first parameter is the input of form (key,
+thing_to_turn_into_columns, value) and the second is a list of output column
+values (eg. 2008, 2009, 2010, 2011). The from clause needs to declare the
+expected return types, which usually are the types of (key, col1, col2, col3
+...) etc.
 
 For more, read the [tablefunc docs](http://www.postgresql.org/docs/current/static/tablefunc.html).
 
@@ -103,5 +109,42 @@ Things I wish people had told me about crosstab
 * For your category query, you can use a regular select distinct or you can just "fake it" by doing a select * from values (...).
 * Your source sql *must* be ordered by 1, 2.
 * Your category query must be ordered also.
-* You have to pass in the queries as strings, which is a pain in the butt and causes issues when you need to escape things (e.g. a quote). Luckily, the [double dollar operator](http://www.postgresql.org/docs/current/interactive/sql-syntax-lexical.html#SQL-SYNTAX-DOLLAR-QUOTING) comes to the rescue.
+* You have to pass in the queries as strings, which is a pain in the butt and
+  causes issues when you need to escape things (e.g. a quote). Luckily, the
+  [double dollar
+  operator](http://www.postgresql.org/docs/current/interactive/sql-syntax-lexical.html#SQL-SYNTAX-DOLLAR-QUOTING)
+  comes to the rescue.
 
+Usage
+-----
+crosstab.py handles most of the grossness for you so you can get work done. Check example.py for the full runnable code.
+
+```python
+crosstab_input = \
+select([    raw.c.country,
+            raw.c.year,
+            raw.c.quantity])
+
+categories = \
+    select([distinct(raw.c.year)])
+
+
+ret_types = Table('ct', m,  Column('country', Text),
+                            Column('y1', Integer),
+                            Column('y2', Integer),
+                            Column('y3', Integer),
+                            Column('y4', Integer),
+                            )
+
+q = select(['*']).select_from(crosstab(crosstab_input, ret_types, categories=categories))
+```
+
+generates the query:
+
+```sql
+SELECT * 
+FROM crosstab(
+    $$SELECT raw.country, raw.year, raw.quantity FROM raw ORDER BY 1,2$$,
+    $$SELECT DISTINCT raw.year FROM raw ORDER BY 1$$)
+AS ct(country TEXT, y1 INTEGER, y2 INTEGER, y3 INTEGER, y4 INTEGER)
+```
