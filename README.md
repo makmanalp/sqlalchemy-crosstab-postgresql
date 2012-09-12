@@ -158,3 +158,21 @@ FROM crosstab(
     $$SELECT DISTINCT raw.year FROM raw ORDER BY 1$$)
 AS ct(country TEXT, y1 INTEGER, y2 INTEGER, y3 INTEGER, y4 INTEGER)
 ```
+
+crosstab.py also supplies row_total(), which allows you to sum a bunch of
+fields in a row while ignoring NULLs and pretending they were 0s. Otherwise,
+the NULLs would eat up the numbers and the total would be NULL. It does this
+under the hood by calling coalesce(x, 0) on each field and then summing them.
+This is meant to be used on the select part of a crosstab, such as:
+
+```sql
+select(['header', 'y1', 'y2', row_total('y1'. 'y2').label('sum')])\
+    .select_from(crosstab(...))\
+    .order_by('sum')
+```
+
+Which generates:
+
+```sql
+select header, y1, y2, coalesce(y1, 0) + coalesce(y2, 0) as sum from crosstab(...) order by sum
+```

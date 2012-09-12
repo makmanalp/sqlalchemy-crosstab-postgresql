@@ -1,4 +1,4 @@
-from sqlalchemy.sql import FromClause, column
+from sqlalchemy.sql import FromClause, column, ColumnElement
 from sqlalchemy.ext.compiler import compiles
 
 class crosstab(FromClause):
@@ -41,3 +41,17 @@ def visit_element(element, compiler, **kw):
                 for c in element.c
                 )
             )
+
+from operator import add
+from sqlalchemy import func, INTEGER
+
+class row_total(ColumnElement):
+    type = INTEGER()
+    def __init__(self, cols):
+        self.cols = cols
+
+@compiles(row_total)
+def compile_row_total(element, compiler, **kw):
+    #coalesce_columns = [func.coalesce("'%s'" % x.name, 0) for x in element.cols]
+    coalesce_columns = ["coalesce(%s, 0)" % x.name for x in element.cols]
+    return "+".join(coalesce_columns)
