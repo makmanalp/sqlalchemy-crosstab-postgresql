@@ -176,3 +176,5 @@ Which generates:
 ```sql
 select header, y1, y2, coalesce(y1, 0) + coalesce(y2, 0) as sum from crosstab(...) order by sum
 ```
+
+This is useful for row totals and subtotals.
