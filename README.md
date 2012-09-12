@@ -166,7 +166,7 @@ under the hood by calling coalesce(x, 0) on each field and then summing them.
 This is meant to be used on the select part of a crosstab, such as:
 
 ```sql
-select(['header', 'y1', 'y2', row_total('y1'. 'y2').label('sum')])\
+select(['header', 'y1', 'y2', row_total('y1', 'y2').label('sum')])\
     .select_from(crosstab(...))\
     .order_by('sum')
 ```
