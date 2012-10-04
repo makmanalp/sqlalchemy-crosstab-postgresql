@@ -14,6 +14,9 @@ Thanks
 ------
 * Michael Bayer of the sqlalchemy list for the original sample code.
 
+Similar Projects
+----------------
+* Tomas Drencak's [pandas-sqlalchemy-pivot](https://github.com/tomasd/pandas-sqlalchemy-pivot) that uses pandas for pivoting instead of the database itself.
 
 What is crosstab?
 -----------------
