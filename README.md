@@ -1,8 +1,9 @@
 sqlalchemy-crosstab-postgresql
 ==============================
 
-New grammar for SQLAlchemy to make handling the crosstab() tablefunc in
-Postgresql easy peasy. Jump down to the usage example if you're impatient.
+New grammar for SQLAlchemy to make handling the crosstab() tablefunc
+(i.e. pivot tables) in Postgresql easy peasy. Jump down to the usage
+example if you're impatient.
 
 This is a work-in-progress and not all that clean right now, but you're welcome
 to bring in your fixes and patches!
@@ -17,7 +18,7 @@ Thanks
 What is crosstab?
 -----------------
 
-Crosstab, a.k.a. pivot, is best described by example. Let's say you have a table of population records:
+Crosstab, a.k.a. pivot tables, is best described by example. Let's say you have a table of population records:
 
 <table>
     <tr>
