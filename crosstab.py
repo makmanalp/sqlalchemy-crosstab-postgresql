@@ -28,7 +28,7 @@ def visit_element(element, compiler, **kw):
             compiler.visit_select(element.categories),
             element.return_name,
             ", ".join(
-                "%s %s" % (c.name, compiler.visit_typeclause(c))
+                "\"%s\" %s" % (c.name, compiler.visit_typeclause(c))
                 for c in element.c
                 )
             )
@@ -53,5 +53,5 @@ class row_total(ColumnElement):
 @compiles(row_total)
 def compile_row_total(element, compiler, **kw):
     #coalesce_columns = [func.coalesce("'%s'" % x.name, 0) for x in element.cols]
-    coalesce_columns = ["coalesce(%s, 0)" % x.name for x in element.cols]
+    coalesce_columns = ['coalesce("%s", 0)' % x.name for x in element.cols]
     return "+".join(coalesce_columns)
