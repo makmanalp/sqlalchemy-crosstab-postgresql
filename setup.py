@@ -13,7 +13,7 @@ setup(
     keywords='',
     author='Mehmet Ali "Mali" Akmanalp',
     author_email='',
-    url='https://github.com/dimazest/sqlalchemy-crosstab-postgresql',
+    url='https://github.com/makmanalp/sqlalchemy-crosstab-postgresql',
     license='BSD license',
     py_modules=['crosstab'],
     zip_safe=False,
