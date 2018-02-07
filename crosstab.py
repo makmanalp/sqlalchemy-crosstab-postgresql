@@ -1,12 +1,25 @@
 from sqlalchemy.sql import FromClause, column, ColumnElement
+from sqlalchemy.orm import Query
 from sqlalchemy.ext.compiler import compiles
 
 class crosstab(FromClause):
     def __init__(self, stmt, return_def, categories=None, auto_order=True):
+        if not (isinstance(return_def, (list, tuple))
+                or return_def.is_selectable):
+            raise TypeError('return_def must be a selectable or tuple/list')
         self.stmt = stmt
-        self.return_name = return_def.name
-        self.columns = return_def.columns
+        self.columns = return_def if isinstance(return_def, (list, tuple)) \
+            else return_def.columns
         self.categories = categories
+        if hasattr(return_def, 'name'):
+            self.name = return_def.name
+        else:
+            self.name = None
+
+        if isinstance(self.stmt, Query):
+            self.stmt = self.stmt.selectable
+        if isinstance(self.categories, Query):
+            self.categories = self.categories.selectable
 
         #Don't rely on the user to order their stuff
         if auto_order:
@@ -20,22 +33,20 @@ class crosstab(FromClause):
             for name, type_ in self.names
         )
 
-@compiles(crosstab)
+@compiles(crosstab, 'postgresql')
 def visit_element(element, compiler, **kw):
     if element.categories is not None:
-        return """crosstab($$%s$$, $$%s$$) AS %s(%s)""" % (
+        return """crosstab($$%s$$, $$%s$$) AS (%s)""" % (
             compiler.visit_select(element.stmt),
             compiler.visit_select(element.categories),
-            element.return_name,
             ", ".join(
                 "\"%s\" %s" % (c.name, compiler.visit_typeclause(c))
                 for c in element.c
                 )
             )
     else:
-        return """crosstab($$%s$$) AS %s(%s)""" % (
+        return """crosstab($$%s$$) AS (%s)""" % (
             compiler.visit_select(element.stmt),
-            element.return_name,
             ", ".join(
                 "%s %s" % (c.name, compiler.visit_typeclause(c))
                 for c in element.c
